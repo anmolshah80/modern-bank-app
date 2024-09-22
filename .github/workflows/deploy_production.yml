@@ -1,0 +1,86 @@
+name: Build and Deploy
+env:
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  NETLIFY_ACCESS_TOKEN: ${{ secrets.NETLIFY_ACCESS_TOKEN }}
+  BRANCH_NAME: ${{ github.ref_name }}
+on: [push]
+permissions:
+  # give this workflow permission to comment out deployed preview url
+  pull-requests: write
+jobs:
+  deploy-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Netlify Globally
+        run: npm install netlify-cli@17.36.2 -g
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Deploy to Production
+        id: netlify_deploy
+        run: |
+          netlify_prod_flag=""
+
+          if [ "$BRANCH_NAME" = "main" ]; then netlify_prod_flag="--prod"; fi
+
+          netlify deploy \
+            --dir dist \
+            --site $NETLIFY_SITE_ID \
+            --auth $NETLIFY_ACCESS_TOKEN
+            $netlify_prod_flag \
+            --json \
+            > deploy_output.json
+
+      - name: Generate Deploy Preview URL
+        id: url_preview
+        if: ${{ env.BRANCH_NAME != 'main' }}
+        run: |
+          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
+
+          echo "$NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> $GITHUB_OUTPUT
+
+      - name: Log the Preview URL
+        run: echo ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
+
+      - name: Comment Preview URL on Pull Request
+        uses: actions/github-scripts@v7
+        if: ${{ env.BRANCH_NAME != 'main' }}
+        env:
+          NETLIFY_PREVIEW_URL: ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
+        with:
+          script: |
+            async function commentPreviewUrlOnPR() {
+              const result = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+              })
+
+              const issueNumber = result.data[0].number
+
+              if (issueNumber) {
+                await github.rest.issues.createComment({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: 'Preview URL: ' + $NETLIFY_PREVIEW_URL
+                })
+              } else {
+                console.log('No PR found for the commit ' + context.sha)
+              }
+            }
+
+            commentPreviewUrlOnPR()
