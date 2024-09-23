@@ -39,7 +39,7 @@ jobs:
           netlify deploy \
             --dir dist \
             --site $NETLIFY_SITE_ID \
-            --auth $NETLIFY_ACCESS_TOKEN
+            --auth $NETLIFY_ACCESS_TOKEN \
             $netlify_prod_flag \
             --json \
             > deploy_output.json
