@@ -77,7 +77,7 @@ jobs:
                   issue_number: issueNumber,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  body: 'Preview URL: ' + $NETLIFY_PREVIEW_URL
+                  body: 'Preview URL: ' + process.env.NETLIFY_PREVIEW_URL
                 })
               } else {
                 console.log('No PR found for the commit ' + context.sha)
