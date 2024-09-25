@@ -50,7 +50,7 @@ jobs:
         run: |
           NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
 
-          echo "$NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> $GITHUB_OUTPUT
 
       - name: Log the Preview URL
         if: ${{ env.BRANCH_NAME != 'main' }}
