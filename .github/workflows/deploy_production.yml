@@ -53,6 +53,7 @@ jobs:
           echo "$NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> $GITHUB_OUTPUT
 
       - name: Log the Preview URL
+        if: ${{ env.BRANCH_NAME != 'main' }}
         run: echo ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
 
       - name: Comment Preview URL on Pull Request
