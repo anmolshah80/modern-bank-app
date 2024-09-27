@@ -5,7 +5,7 @@ env:
   BRANCH_NAME: ${{ github.ref_name }}
 on: [push]
 permissions:
-  # give this workflow permission to comment out deployed preview url
+  # give this workflow permission to comment deployed preview url on the PR
   pull-requests: write
 jobs:
   deploy-app:
@@ -70,7 +70,8 @@ jobs:
                 commit_sha: context.sha,
               })
 
-              const issueNumber = result.data[0].number
+              // adding the optional chaining operator since a pull request is not available or created during the first commit push for a new branch
+              const issueNumber = result.data[0]?.number;
 
               if (issueNumber) {
                 await github.rest.issues.createComment({
