@@ -169,7 +169,7 @@ export const footerLinks = [
   },
 ];
 
-export const socialMedia = [
+export const socialMedias = [
   {
     id: 'social-media-1',
     icon: instagram,
