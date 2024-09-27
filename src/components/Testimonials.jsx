@@ -28,7 +28,7 @@ const Testimonials = () => (
       </div>
     </div>
 
-    <div className="flex flex-wrap sm:justify-start justify-center w-full feedback-container relative z-[1]">
+    <div className="flex flex-wrap lg:justify-start justify-between w-full feedback-container relative z-[1]">
       <ShowFeedbacks />
     </div>
   </section>
