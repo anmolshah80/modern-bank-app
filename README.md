@@ -5,6 +5,7 @@
 - Create a Modern UI/UX HooBank Landing Page Website
 - Create a Navbar section for the site
 - Create Hero and Stats sections to let users know about the website at a quick glance with concise information
+- Create a Business, Billing, and Card Deal sections to list down the features of the card provided by the bank
 - Add responsiveness to each of these sections for desktop, tablet, and mobile devices
 - Create a `deploy_production.yml` workflow to build and deploy the preview for each commit push, and deploy the changes to production for every commit push to `main` branch in Netlify
 
